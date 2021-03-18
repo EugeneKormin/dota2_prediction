@@ -1,7 +1,8 @@
-from api import get_matches, get_team_details_by_id, get_team_rating_by_team_id
+from parse_data import run
 from pandas import DataFrame
-from time import sleep
 
+
+matches_parsed = 0
 
 details_dict = {
     "id": [],
@@ -19,51 +20,50 @@ details_dict = {
     "games_won_by_radiant_team": [],
     "games_lost_by_radiant_team": [],
     "radiant_win": [],
-    "radiant_team_rating": []
+    "radiant_team_rating": [],
+    "radiant_team_elo32_rating": [],
+    "radiant_team_elo64_rating": [],
+    "radiant_team_glicko1_rating": [],
+    "radiant_team_glicko2_rating": [],
+    "radiant_team_elo32_mu": [],
+    "radiant_team_elo64_mu": [],
+    "radiant_team_glicko1_mu": [],
+    "radiant_team_glicko2_mu": [],
+    "radiant_team_elo32_phi": [],
+    "radiant_team_elo64_phi": [],
+    "radiant_team_glicko1_phi": [],
+    "radiant_team_glicko2_phi": [],
+    "radiant_team_elo32_sigma": [],
+    "radiant_team_elo64_sigma": [],
+    "radiant_team_glicko1_sigma": [],
+    "radiant_team_glicko2_sigma": [],
+    "dire_team_elo32_rating": [],
+    "dire_team_elo64_rating": [],
+    "dire_team_glicko1_rating": [],
+    "dire_team_glicko2_rating": [],
+    "dire_team_elo32_mu": [],
+    "dire_team_elo64_mu": [],
+    "dire_team_glicko1_mu": [],
+    "dire_team_glicko2_mu": [],
+    "dire_team_elo32_phi": [],
+    "dire_team_elo64_phi": [],
+    "dire_team_glicko1_phi": [],
+    "dire_team_glicko2_phi": [],
+    "dire_team_elo32_sigma": [],
+    "dire_team_elo64_sigma": [],
+    "dire_team_glicko1_sigma": [],
+    "dire_team_glicko2_sigma": [],
 }
 
+last_match_id = 0
+params = {"less_than_match_id": last_match_id}
 
 if __name__ == "__main__":
-    matches_data = get_matches()
-    for num, match in enumerate(matches_data):
-        dire_team_details = get_team_details_by_id(match["dire_team_id"])
-        radiant_team_details = get_team_details_by_id(match["radiant_team_id"])
-        if dire_team_details != '' and radiant_team_details != '':
-            radiant_team_id = match["radiant_team_id"]
-            dire_team_id = match["dire_team_id"]
-            radiant_team_rating = get_team_rating_by_team_id(team_id=radiant_team_id)
-            dire_team_rating = get_team_rating_by_team_id(team_id=dire_team_id)
+    while matches_parsed < 5000:
+        details_dict, params = run(details_dict=details_dict, params=params)
+        matches_parsed = len(details_dict["id"])
+        print(f"matches_parsed: {matches_parsed}"
+              .format(matches_parsed=matches_parsed))
 
-            details_dict["id"].append(match["match_id"])
-            details_dict["duration"].append(match["duration"])
-            details_dict["start_time"].append(match["start_time"])
-            details_dict["radiant_team_id"].append(radiant_team_id)
-            details_dict["dire_team_id"].append(dire_team_id)
-            details_dict["league_id"].append(match["leagueid"])
-            details_dict["series_id"].append(match["series_id"])
-            details_dict["radiant_score"].append(match["radiant_score"])
-            details_dict["dire_score"].append(match["dire_score"])
-
-            details_dict["dire_team_rating"].append(dire_team_details["rating"])
-            details_dict["games_won_by_dire_team"].append(dire_team_details["wins"])
-            details_dict["games_lost_by_dire_team"].append(dire_team_details["losses"])
-            details_dict["radiant_win"].append(match["radiant_win"])
-
-            details_dict["radiant_team_rating"].append(radiant_team_details["rating"])
-            details_dict["games_won_by_radiant_team"].append(radiant_team_details["wins"])
-            details_dict["games_lost_by_radiant_team"].append(radiant_team_details["losses"])
-
-
-
-            radiant_team_name = match["radiant_name"]
-            dire_team_name = match["dire_name"]
-
-
-            print("parse #{}/ radiant team name: {}/ dire team name: {}"
-                  .format(num, radiant_team_name, dire_team_name))
-        sleep(1)
-    df = DataFrame({
-        details_dict
-    })
+    df = DataFrame(details_dict)
     df.to_excel("dota_data.xlsx")
-    print(df)
