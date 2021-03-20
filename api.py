@@ -1,5 +1,7 @@
 from requests import get
 from json import loads
+from time import sleep
+
 
 
 def get_matches(params):
@@ -8,11 +10,13 @@ def get_matches(params):
     else:
         response = get("https://api.opendota.com/api/proMatches", params=params).text
     response_dict = loads(response)
+    sleep(2)
     return response_dict
 
 
 def get_team_details_by_id(team_id):
     response = get(f"https://api.opendota.com/api/teams/{team_id}".format(team_id=team_id)).text
+    sleep(2)
     if response != '':
         response_dict = loads(response)
         return response_dict
@@ -26,6 +30,7 @@ def get_team_rating_by_team_id(team_id):
     url = f"http://datdota.com/api/teams/{team_id}".format(team_id=team_id)
     try:
         team_rating_info = loads(get(url).text)
+        sleep(2)
         if team_rating_info["data"]["ratings"] != {}:
             rating_elo_32 = team_rating_info["data"]["ratings"]["ELO_32"]
             rating_elo_64 = team_rating_info["data"]["ratings"]["ELO_64"]
@@ -57,3 +62,6 @@ def get_team_rating_by_team_id(team_id):
     except:
         team_rating = {}
     return team_rating
+
+
+

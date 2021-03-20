@@ -1,21 +1,8 @@
-import pandas as pd
-from main import run
+import matplotlib.pyplot as plt
+from numpy import sin, cos, pi, arange
 
 
-x = 4
+def hours_to_sin(hours):
+    res_sin = sin(2 * pi * hours / 24)
+    print(res_sin)
 
-
-class Main(object):
-    def __init__(self, x):
-        self.x = x
-
-    def func(self):
-        print(self.x)
-
-
-main = Main(x=x)
-main.func()
-
-print(Main(x=x).__dict__)
-print(main.__dict__)
-print(main.func().__dict__)
