@@ -1,8 +1,5 @@
-import matplotlib.pyplot as plt
-from numpy import sin, cos, pi, arange
+from db import connect_to_db
 
 
-def hours_to_sin(hours):
-    res_sin = sin(2 * pi * hours / 24)
-    print(res_sin)
+
 

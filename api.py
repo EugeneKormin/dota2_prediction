@@ -3,8 +3,12 @@ from json import loads
 from time import sleep
 
 
-
 def get_matches(params):
+    """
+    Method for API call creation to DatDota DB to retrieve raw data
+    :param params: match id to fetch from
+    :return: raw data
+    """
     if params["less_than_match_id"] == 0:
         response = get("https://api.opendota.com/api/proMatches").text
     else:
@@ -15,6 +19,11 @@ def get_matches(params):
 
 
 def get_team_details_by_id(team_id):
+    """
+    Method for retrieving detailed raw data about a team by team's ID
+    :param team_id:
+    :return: detailed info / empty string if no info in DatDota DB
+    """
     response = get(f"https://api.opendota.com/api/teams/{team_id}".format(team_id=team_id)).text
     sleep(2)
     if response != '':
@@ -25,6 +34,11 @@ def get_team_details_by_id(team_id):
 
 
 def get_team_rating_by_team_id(team_id):
+    """ Method for retrieving detailed raw data about a team by team's ID
+    Parse raw data to
+    :param team_id:
+    :return:
+    """
     team_rating = {}
 
     url = f"http://datdota.com/api/teams/{team_id}".format(team_id=team_id)
