@@ -25,7 +25,7 @@ def parse_time(date_time_to_parse):
     return year, day_sin, hour_sin, min_sin
 
 
-def run(cursor, params):
+def run(params):
     """
     Parse & adding data to DB
     :param cursor: cursor
@@ -120,9 +120,9 @@ def run(cursor, params):
                 match_details_list = []
 
                 if len(matches_list) == BATCHES_FOR_ADDING_TO_DB:
-                    add_many_to_db(cursor=cursor, matches_list=matches_list)
+                    add_many_to_db(matches_list=matches_list)
 
-                    MATCHES_PARSED_TOTAL = len(get_list_of_matches_parsed(cursor=cursor))
+                    MATCHES_PARSED_TOTAL = len(get_list_of_matches_parsed())
                     MATCHES_LEFT = 5000 - MATCHES_PARSED_TOTAL
                     print(f"matches left: {MATCHES_LEFT}"
                           .format(MATCHES_LEFT=MATCHES_LEFT))
