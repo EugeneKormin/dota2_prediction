@@ -1,6 +1,7 @@
-from parse_data import run
+from parse_data import parse
 from db import get_min_match_id
 from requests.exceptions import ConnectionError
+from get_data import get
 
 
 MATCHES_PARSED = 0
@@ -14,7 +15,7 @@ def main():
     try:
         last_match_id = get_min_match_id()
         params = {"less_than_match_id": last_match_id}
-        run(params=params)
+        parse(params=params)
 
     except ConnectionError:
         # if 100 matches has not been parsed because of connection then retry
@@ -22,5 +23,5 @@ def main():
 
 
 if __name__ == "__main__":
-    while MATCHES_PARSED < 5000:
-        main()
+    df = get()
+    print(df)

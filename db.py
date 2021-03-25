@@ -38,7 +38,7 @@ def get_min_match_id():
     query = """SELECT id FROM dota2"""
     cursor.execute(query)
     matches_list = cursor.fetchone()
-    print("min match id: ", min(matches_list))
+
     if matches_list is None:
         return 0
     else:
