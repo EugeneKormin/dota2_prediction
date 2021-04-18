@@ -25,24 +25,9 @@ def get_list_of_matches_parsed():
     query = """SELECT id FROM dota2"""
     cursor.execute(query)
     match_id_list = cursor.fetchall()
-    return match_id_list
-
-
-def get_min_match_id():
-    """
-    Get match id to start from in next 'get data' iteration
-    :return: last match ID added to our DB or zero if our DB is empty for now
-    """
-    db = connect_to_db()
-    cursor = db.cursor()
-    query = """SELECT id FROM dota2"""
-    cursor.execute(query)
-    matches_list = cursor.fetchone()
-
-    if matches_list is None:
-        return 0
-    else:
-        return min(matches_list)
+    match_id_list_temp = []
+    [match_id_list_temp.append(match_id[0]) for match_id in match_id_list]
+    return match_id_list_temp
 
 
 def add_many_to_db(matches_list: list):
@@ -54,7 +39,6 @@ def add_many_to_db(matches_list: list):
     print("start adding to db")
     db = connect_to_db()
     cursor = db.cursor()
-    list_of_matches_parsed = get_list_of_matches_parsed()
     query = """INSERT INTO dota2(
         id, duration, year, hour_sin, day_sin, min_sin, 
         radiant_team_id, dire_team_id, 
@@ -93,3 +77,15 @@ def add_many_to_db(matches_list: list):
                 is_connected = True
     cursor.executemany(query, matches_list)
     print("success")
+
+
+def get_last_parsed_match():
+    """
+    Get match id to start from in next 'get data' iteration
+    :return: last match ID added to our DB or zero if our DB is empty for now
+    """
+    db = connect_to_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT max(id) as max_id FROM mydb.dota2;")
+    max_id = cursor.fetchone()[0]
+    return max_id

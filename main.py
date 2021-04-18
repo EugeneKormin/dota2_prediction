@@ -1,5 +1,5 @@
 from parse_data import parse
-from db import get_min_match_id
+from db import get_last_parsed_match
 from requests.exceptions import ConnectionError
 from get_data import get
 
@@ -13,7 +13,7 @@ def main():
     main ETL algorithm
     """
     try:
-        last_match_id = get_min_match_id()
+        last_match_id = get_last_parsed_match()
         params = {"less_than_match_id": last_match_id}
         parse(params=params)
 
@@ -23,5 +23,6 @@ def main():
 
 
 if __name__ == "__main__":
+    main()
     df = get()
     print(df)
