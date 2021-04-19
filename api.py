@@ -1,12 +1,12 @@
 from requests import get
-from json import loads
+from json import loads, decoder
 from time import sleep
 
 
-def get_matches(params):
+def get_matches(params: dict) -> dict:
     """
-    Method for API call creation to DatDota DB to retrieve raw data
-    :param params: match id to fetch from
+    Method for API call creation to DatDota DB to retrieve raw data\n
+    :param params: match id to fetch from\n
     :return: raw data
     """
     if params["less_than_match_id"] == 0:
@@ -18,11 +18,11 @@ def get_matches(params):
     return response_dict
 
 
-def get_team_details_by_id(team_id):
+def get_team_details_by_id(team_id: int) -> dict:
     """
-    Method for retrieving detailed raw data about a team by team's ID
-    :param team_id:
-    :return: detailed info / empty string if no info in DatDota DB
+    Method for retrieving detailed raw data about a team by team's ID\n
+    :param team_id: team_id\n
+    :return: detailed info / empty dictionary if no info in DatDota DB
     """
     response = get(f"https://api.opendota.com/api/teams/{team_id}".format(team_id=team_id)).text
     sleep(2)
@@ -30,14 +30,13 @@ def get_team_details_by_id(team_id):
         response_dict = loads(response)
         return response_dict
     else:
-        return ''
+        return {}
 
 
-def get_team_rating_by_team_id(team_id):
-    """ Method for retrieving detailed raw data about a team by team's ID
-    Parse raw data to
-    :param team_id:
-    :return:
+def get_team_rating_by_team_id(team_id: int) -> dict:
+    """ Method for retrieving detailed raw data about a team by team's ID\n
+    :param team_id: team_id\n
+    :return: team_rating
     """
     team_rating = {}
 
@@ -45,7 +44,8 @@ def get_team_rating_by_team_id(team_id):
     try:
         team_rating_info = loads(get(url).text)
         sleep(2)
-        if team_rating_info["data"]["ratings"] != {}:
+        # check if any data was returned from datDota server and enough data was returned
+        if team_rating_info["data"]["ratings"] != {} and len(team_rating_info["data"]["ratings"]) == 4:
             rating_elo_32 = team_rating_info["data"]["ratings"]["ELO_32"]
             rating_elo_64 = team_rating_info["data"]["ratings"]["ELO_64"]
             rating_glicko_1 = team_rating_info["data"]["ratings"]["GLICKO_1"]
@@ -73,9 +73,7 @@ def get_team_rating_by_team_id(team_id):
             team_rating["ratingGLICKO2_sigma"] = rating_glicko_2["sigma"]
         else:
             team_rating = {}
-    except:
-        team_rating = {}
+    except decoder.JSONDecodeError:
+        # return empty dict if no data is returned from outer datDota server
+        return {}
     return team_rating
-
-
-

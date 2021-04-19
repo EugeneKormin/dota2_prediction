@@ -3,47 +3,46 @@ from read_config import host, user, passwd, db_name
 from time import sleep
 
 
-def connect_to_db(type_: str):
+def connect_to_db() -> dict:
     """
-    establishing connection to mysql DB
-    :return: db
+    establishing connection to mysql DB\n
+    :return: dict with conn & cursor as keys
     """
     conn = connect(host=host,
                  user=user,
                  passwd=passwd,
                  db=db_name,
                  autocommit=True)
-    if type_ == "cursor":
-        cursor = conn.cursor()
-        return cursor
-    elif type_ == "conn":
-        return conn
+
+    cursor = conn.cursor()
+    mysql = {
+        "conn": conn,
+        "cursor": cursor
+    }
+    return mysql
 
 
-def get_parsed_match(details: str):
+def get_parsed_match() -> list:
     """
-    Get number of matches that has already been added to DB
-    :param cursor: cursor
+    Get number of matches that has already been added to DB\n
+    :param cursor: cursor\n
     :return: num of matches currently in DB
     """
-    cursor = connect_to_db(type_="cursor")
+    mysql = connect_to_db()
+    cursor = mysql["cursor"]
     query = """SELECT id FROM dota2"""
     cursor.execute(query)
     match_id_list = cursor.fetchall()
     match_id_list_temp = []
     [match_id_list_temp.append(match_id[0]) for match_id in match_id_list]
-    if details == "all":
-        return match_id_list_temp
-    elif details == "first":
-        return match_id_list_temp[0]
-    elif details == "last":
-        return match_id_list_temp[-1]
+
+    return match_id_list_temp
 
 
 def add_many_to_db(matches_list: list):
     """
-    Method is used for adding parsed match detailed data to DB
-    :param cursor: cursor
+    Method is used for adding parsed match detailed data to DB\n
+    :param cursor: cursor\n
     :param matches_list: list of matches that are to be added to DB
     """
     print("start adding to db")
@@ -78,13 +77,14 @@ def add_many_to_db(matches_list: list):
         %s, %s)"""
 
     # establishing DB connection
-    conn = connect_to_db(type_="conn")
+    mysql = connect_to_db()
+    conn = mysql["conn"]
     # if connection was not established. Reconnecting with 3 second interval.
     while not conn.open:
-        conn = connect_to_db(type_="conn")
+        mysql = connect_to_db()
         sleep(3)
 
-    cursor = connect_to_db(type_="cursor")
+    cursor = mysql["cursor"]
 
     # executing query
     cursor.executemany(query, matches_list)

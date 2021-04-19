@@ -1,17 +1,17 @@
-from parse_data import parse
+from parse_data import parse_and_add
 from get_data import get
 
 
-MATCHES_PARSED = 0
-match_details_list = []
+# TODO estimate how much to wait until adding is completed. (max match_id - min_match_id) / latest_current_match_id
 
 
-# TODO create decorator for 'connect_to_db' function in 'db.py' module.
-#      Decorator will check if connection is established. If so return db, if not reconnect
-
-# TODO make class for current match
-
-if __name__ == "__main__":
-    parse()
+def main_ETL():
+    """
+    main function
+    """
+    parse_and_add()
     df = get()
     print(df)
+
+
+main_ETL()
