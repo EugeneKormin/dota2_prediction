@@ -1,6 +1,4 @@
 from parse_data import parse
-from db import get_last_parsed_match
-from requests.exceptions import ConnectionError
 from get_data import get
 
 
@@ -8,21 +6,12 @@ MATCHES_PARSED = 0
 match_details_list = []
 
 
-def main():
-    """
-    main ETL algorithm
-    """
-    try:
-        last_match_id = get_last_parsed_match()
-        params = {"less_than_match_id": last_match_id}
-        parse(params=params)
+# TODO create decorator for 'connect_to_db' function in 'db.py' module.
+#      Decorator will check if connection is established. If so return db, if not reconnect
 
-    except ConnectionError:
-        # if 100 matches has not been parsed because of connection then retry
-        main()
-
+# TODO make class for current match
 
 if __name__ == "__main__":
-    main()
+    parse()
     df = get()
     print(df)

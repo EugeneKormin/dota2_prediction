@@ -1,33 +1,43 @@
 from pymysql import connect
+from read_config import host, user, passwd, db_name
+from time import sleep
 
 
-def connect_to_db():
+def connect_to_db(type_: str):
     """
     establishing connection to mysql DB
     :return: db
     """
-    db = connect(host="188.120.249.59", 
-                 user="resolweru",
-                 passwd="qdxk7pdpd",
-                 db="mydb",
+    conn = connect(host=host,
+                 user=user,
+                 passwd=passwd,
+                 db=db_name,
                  autocommit=True)
-    return db
+    if type_ == "cursor":
+        cursor = conn.cursor()
+        return cursor
+    elif type_ == "conn":
+        return conn
 
 
-def get_list_of_matches_parsed():
+def get_parsed_match(details: str):
     """
     Get number of matches that has already been added to DB
     :param cursor: cursor
     :return: num of matches currently in DB
     """
-    db = connect_to_db()
-    cursor = db.cursor()
+    cursor = connect_to_db(type_="cursor")
     query = """SELECT id FROM dota2"""
     cursor.execute(query)
     match_id_list = cursor.fetchall()
     match_id_list_temp = []
     [match_id_list_temp.append(match_id[0]) for match_id in match_id_list]
-    return match_id_list_temp
+    if details == "all":
+        return match_id_list_temp
+    elif details == "first":
+        return match_id_list_temp[0]
+    elif details == "last":
+        return match_id_list_temp[-1]
 
 
 def add_many_to_db(matches_list: list):
@@ -37,9 +47,8 @@ def add_many_to_db(matches_list: list):
     :param matches_list: list of matches that are to be added to DB
     """
     print("start adding to db")
-    db = connect_to_db()
-    cursor = db.cursor()
-    query = """INSERT INTO dota2(
+
+    query = """INSERT IGNORE INTO dota2(
         id, duration, year, hour_sin, day_sin, min_sin, 
         radiant_team_id, dire_team_id, 
         league_id, series_id, radiant_score, dire_score, radiant_win, 
@@ -52,7 +61,8 @@ def add_many_to_db(matches_list: list):
         dire_team_elo32_rating, dire_team_elo64_rating, dire_team_glicko1_rating, dire_team_glicko2_rating, 
         dire_team_elo32_mu, dire_team_elo64_mu, dire_team_glicko1_mu, dire_team_glicko2_mu, 
         dire_team_elo32_phi, dire_team_elo64_phi, dire_team_glicko1_phi, dire_team_glicko2_phi, 
-        dire_team_elo32_sigma, dire_team_elo64_sigma, dire_team_glicko1_sigma, dire_team_glicko2_sigma
+        dire_team_elo32_sigma, dire_team_elo64_sigma, dire_team_glicko1_sigma, dire_team_glicko2_sigma, 
+        comments
         ) 
         VALUES (
         %s, %s, %s, %s, %s, 
@@ -60,32 +70,24 @@ def add_many_to_db(matches_list: list):
         %s, %s, %s, %s, %s, 
         %s, %s, %s, %s, %s, 
         %s, %s, %s, %s, %s, 
-        %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, 
-        %s, %s, %s,
         %s, %s, %s, %s, %s, 
-        %s, %s, %s)"""
+        %s, %s, %s, %s, %s, 
+        %s, %s, %s, %s, %s, 
+        %s, %s, %s, %s, %s, 
+        %s, %s)"""
 
-    is_connected = False
-    db = connect_to_db()
+    # establishing DB connection
+    conn = connect_to_db(type_="conn")
+    # if connection was not established. Reconnecting with 3 second interval.
+    while not conn.open:
+        conn = connect_to_db(type_="conn")
+        sleep(3)
 
-    if not db:
-        while is_connected:
-            db = connect_to_db()
-            if db:
-                is_connected = True
+    cursor = connect_to_db(type_="cursor")
+
+    # executing query
     cursor.executemany(query, matches_list)
-    print("success")
 
-
-def get_last_parsed_match():
-    """
-    Get match id to start from in next 'get data' iteration
-    :return: last match ID added to our DB or zero if our DB is empty for now
-    """
-    db = connect_to_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT max(id) as max_id FROM mydb.dota2;")
-    max_id = cursor.fetchone()[0]
-    return max_id
+    cursor.close()
+    print("add to DB. Success")
