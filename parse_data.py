@@ -44,11 +44,16 @@ def parse_and_add():
         # update latest parsed match_id to start new iteration from AND
         # list of current matches id because they were added in previous iteration
         latest_match_id_in_current_iteration = matches_data[-1]["match_id"]
-        print("latest current match id: {}".format(latest_match_id_in_current_iteration))
         params = {"less_than_match_id": latest_match_id_in_current_iteration}
         list_of_parsed_matches = get_parsed_match()
+        min_match_id = list_of_parsed_matches[0]
+        max_match_id = list_of_parsed_matches[-1]
+        normalized_left_matches_countdown = \
+            (latest_match_id_in_current_iteration - min_match_id) / (max_match_id - min_match_id) * 100
+        rounded_normalized_left_matches_countdown = round(normalized_left_matches_countdown, 2)
+        print("left: {}%".format(rounded_normalized_left_matches_countdown))
         for num, match in enumerate(matches_data):
-            done = round((num / len(matches_data)) * 100, 2)
+            done = round((num / len(matches_data)) * 100, 4)
             match_id = match["match_id"]
             # check if data about match has already been added to DB
             if match_id not in list_of_parsed_matches:
@@ -148,7 +153,7 @@ def parse_and_add():
                     # change first element with match id to keep track of this kind of matches
                     match_details_list[0] = match_id
                     # change last element with comment to keep track of reason for skipping
-                    match_details_list += "one of teams is not known enough"
+                    match_details_list += ["one of teams is not known enough"]
 
                 # updating current list of matches
                 matches_list.append(match_details_list)
@@ -166,5 +171,7 @@ def parse_and_add():
             else:
                 print("{} matches are about to be added to DB".format(matches_in_current_iter_count))
             add_many_to_db(matches_list=matches_list)
+            # drop current data from matches list
+            matches_list = []
         else:
             print("nothing to add to DB")
