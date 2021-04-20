@@ -5,9 +5,10 @@ from time import sleep
 
 def get_matches(params: dict) -> dict:
     """
-    Method for API call creation to DatDota DB to retrieve raw data\n
-    :param params: match id to fetch from\n
-    :return: raw data
+    Method for API call creation to DatDota DB to retrieve raw data
+
+    :param params: (dict) # match id to fetch from
+    :returns: (dict) # raw data
     """
     if params["less_than_match_id"] == 0:
         response = get("https://api.opendota.com/api/proMatches").text
@@ -20,13 +21,14 @@ def get_matches(params: dict) -> dict:
 
 def get_team_details_by_id(team_id: int) -> dict:
     """
-    Method for retrieving detailed raw data about a team by team's ID\n
-    :param team_id: team_id\n
-    :return: detailed info / empty dictionary if no info in DatDota DB
+    Method for retrieving detailed raw data about a team by team's ID
+
+    :param team_id: (int) # id of Dota2 team
+    :returns: (dict) # detailed info / empty dictionary if no info in DatDota DB
     """
     response = get(f"https://api.opendota.com/api/teams/{team_id}".format(team_id=team_id)).text
     sleep(2)
-    if response != '':
+    if response != {}:
         response_dict = loads(response)
         return response_dict
     else:
@@ -34,9 +36,11 @@ def get_team_details_by_id(team_id: int) -> dict:
 
 
 def get_team_rating_by_team_id(team_id: int) -> dict:
-    """ Method for retrieving detailed raw data about a team by team's ID\n
-    :param team_id: team_id\n
-    :return: team_rating
+    """ Method for retrieving detailed raw data about a team by team's ID
+
+    :param team_id: (int) # id of Dota2 team
+    :returns: (dict) # detailed info / empty dictionary if no info in DatDota DB
+    :raises decoder.JSONDecodeError: if not enough data on datDota server
     """
     team_rating = {}
 

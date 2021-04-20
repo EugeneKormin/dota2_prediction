@@ -5,8 +5,9 @@ from time import sleep
 
 def connect_to_db() -> dict:
     """
-    establishing connection to mysql DB\n
-    :return: dict with conn & cursor as keys
+    establishing connection to mysql DB
+
+    :returns: (dict) # with conn & cursor as keys
     """
     conn = connect(host=host,
                  user=user,
@@ -24,9 +25,9 @@ def connect_to_db() -> dict:
 
 def get_parsed_match() -> list:
     """
-    Get number of matches that has already been added to DB\n
-    :param cursor: cursor\n
-    :return: num of matches currently in DB
+    Get number of matches that has already been added to DB
+
+    :returns: (list) # num of matches currently in DB
     """
     mysql = connect_to_db()
     cursor = mysql["cursor"]
@@ -41,9 +42,9 @@ def get_parsed_match() -> list:
 
 def add_many_to_db(matches_list: list):
     """
-    Method is used for adding parsed match detailed data to DB\n
-    :param cursor: cursor\n
-    :param matches_list: list of matches that are to be added to DB
+    Method is used for adding parsed match detailed data to DB
+
+    :param matches_list: (list) # of matches that are to be added to DB
     """
     print("start adding to db")
 
