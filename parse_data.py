@@ -47,12 +47,6 @@ def parse_and_add():
         latest_match_id_in_current_iteration = matches_data[-1]["match_id"]
         params = {"less_than_match_id": latest_match_id_in_current_iteration}
         list_of_parsed_matches = get_parsed_match()
-        min_match_id = list_of_parsed_matches[0]
-        max_match_id = list_of_parsed_matches[-1]
-        normalized_left_matches_countdown = \
-            (latest_match_id_in_current_iteration - min_match_id) / (max_match_id - min_match_id) * 100
-        rounded_normalized_left_matches_countdown = round(normalized_left_matches_countdown, 2)
-        print("left: {}%".format(rounded_normalized_left_matches_countdown))
         for num, match in enumerate(matches_data):
             done = round((num / len(matches_data)) * 100, 4)
             match_id = match["match_id"]

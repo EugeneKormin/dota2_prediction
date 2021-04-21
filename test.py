@@ -1,11 +1,5 @@
-def dec2(f):
-    def new_f():
-        print("Decorating", f.__name__)
-        f()
-    return new_f
 
-@dec2
-def func2():
-    print("inside func2()")
-
-func2()
+def train_test_split_timerows(list_1, divide):
+    split = int(len(list_1) * divide)
+    train, test = list_1[:split], list_1[split:]
+    return train, test

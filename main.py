@@ -6,7 +6,7 @@ def main_ETL():
     """
     main ETL function
     """
-    parse_and_add()
+    #parse_and_add()
     df = get()
     print(df)
 
