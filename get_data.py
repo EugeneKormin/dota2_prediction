@@ -32,4 +32,10 @@ def get() -> DataFrame:
     del df["dire_score"]
     del df["duration"]
     del df["comments"]
+    columns_to_str = [
+        "year", "hour_sin", "day_sin", "min_sin", "radiant_team_id", "dire_team_id", "league_id", "series_id",
+        "games_won_by_dire_team", "games_lost_by_dire_team", "games_won_by_radiant_team", "games_lost_by_radiant_team",
+    ]
+    for column in columns_to_str:
+        df[column + "_str"] = df[column].astype(str)
     return df
