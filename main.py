@@ -9,9 +9,9 @@ def main_ETL():
     """
     #parse_and_add()
     #df = get()
-    Parsing(match_id=match_id)
+    Parsing(match_id=MATCH_ID)
 
 
-match_id = "5960390171"
+MATCH_ID = "5965367985"
 
 main_ETL()
