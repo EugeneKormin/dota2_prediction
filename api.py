@@ -1,5 +1,6 @@
 from requests import get
 from json import loads, decoder
+from json.decoder import JSONDecodeError
 from time import sleep
 
 
@@ -28,8 +29,11 @@ def get_team_details_by_id(team_id: int) -> dict:
     """
     response = get(f"https://api.opendota.com/api/teams/{team_id}".format(team_id=team_id)).text
     sleep(2)
-    if response != {}:
-        response_dict = loads(response)
+    if not (response == {} or response == ''):
+        try:
+            response_dict = loads(response)
+        except JSONDecodeError:
+            print(response)
         return response_dict
     else:
         return {}

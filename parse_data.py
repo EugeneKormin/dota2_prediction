@@ -46,10 +46,12 @@ def parse_and_add():
         # list of current matches id because they were added in previous iteration
         latest_match_id_in_current_iteration = matches_data[-1]["match_id"]
         params = {"less_than_match_id": latest_match_id_in_current_iteration}
+        print(params)
         list_of_parsed_matches = get_parsed_match()
         for num, match in enumerate(matches_data):
             done = round((num / len(matches_data)) * 100, 4)
             match_id = match["match_id"]
+            print(match_id)
             # check if data about match has already been added to DB
             if match_id not in list_of_parsed_matches:
                 radiant_team_id = match["radiant_team_id"]
