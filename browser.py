@@ -8,6 +8,18 @@ class Browser(object):
     def __init__(self):
         self.driver = webdriver.Chrome(executable_path=executable_path)
 
+    def match_finding_sequence(self, match_id):
+        self.open_web_page()
+        self.maximize_window()
+        sleep(5)
+        search_box = self.find_element(how="xpath", object_="/html/body/div[1]/div[2]/div/div/a").click()
+        sleep(3)
+        input_box = self.find_element(how="id", object_="q")
+        input_box.send_keys(str(match_id))
+        search_button = self.find_element(how="name", object_="commit").click()
+        html_code = self.get_html_from_page()
+        return html_code
+
     def maximize_window(self):
         self.driver.maximize_window()
 
@@ -30,17 +42,11 @@ class Browser(object):
     def close_browser(self):
         self.driver.close()
 
-    def get_html_from_match_id(self, browser, match_id):
-        browser.open_web_page()
-        browser.maximize_window()
-        sleep(5)
-        search_box = browser.find_element(how="xpath", object_="/html/body/div[1]/div[2]/div/div/a").click()
-        sleep(3)
-        input_box = browser.find_element(how="id", object_="q")
-        input_box.send_keys(str(match_id))
-        search_button = browser.find_element(how="name", object_="commit").click()
-        html_code = browser.get_html_code()
-        #browser.close_browser()
+    def get_html_from_page(self):
+        html_code = self.get_html_code()
         return html_code
 
-
+    def select_game(self, map_num: int):
+        self.driver.find_element_by_xpath(
+            xpath="/html/body/div[1]/div[7]/div[3]/div[4]/section/article/div/div[{}]".format(map_num+1)
+        ).click()
